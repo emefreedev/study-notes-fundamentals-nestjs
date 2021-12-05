@@ -1,0 +1,87 @@
+// nombre de archivo: app.controller.ts
+// lo cambie para continuar con los ejercicios
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { AppService } from './app.service';
+/** Intro:
+ * Los controladores se encargan de recibir los request de la aplicacion, además de validar el tipo de los datos
+ * validar permisos y si todo es correcto conecta con la capa de servicios para obtener los datos.
+ * Pueden haber distintos tipos de controladores.
+ * Son los que reciben los verbos del protocolo http (get, put, patch, post o delete)
+ * Los controladores se definen como una clase y tienen decoradores. Los decoradores son atributos que le dicen a
+ * nest como debe comportarse segun los verbos http.
+ *
+ ** Buenas prácticas para las rutas. Ejemplo:
+ * api.com/tarea/{id}/
+ */
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getHello(): string {
+    return 'texto aparte';
+  }
+
+  @Get('nuevo')
+  /** Este endpoint se puede obserbar en localhost:3000/nuevo */
+  newEndpoint() {
+    return 'nuevo endpoint';
+  }
+
+  @Get('producto/:identificador')
+  /** (ESTA ES UNA FORMA DE HACERLO) Este endpoint recibe un parametro en localhost:3000/producto/:identificador */
+  getProducto(@Param() params: any) {
+    /** El parametro es recibido por "Param" */
+    return `producto: ${params.identificador}`;
+  }
+
+  @Get('products/:productId')
+  /** (ESTA ES OTRA FORMA DE HACERLO) Este endpoint recibe un parametro en localhost:3000/producto/:productId */
+  getProducts(@Param('productId') productId: any) {
+    /** El parametro es recibido por "Param" */
+    return `producto: ${productId}`;
+  }
+
+  @Get('categories/:id/products/:productId')
+  /** (PARA RECIBIR DOS PARAMETROS) Este endpoint recibe un parametro en localhost:3000/producto/:productId */
+  getCategories(
+    @Param('id') id: string,
+    @Param('productId') productId: string,
+  ) {
+    /** El parametro es recibido por "Param" */
+    return `producto: ${productId} y categoria: ${id}`;
+  }
+
+  /** Para los parametros de tipo QUERY
+   * Esto se usa para no enviar de a uno los parametros, sino para mandar un conjunto mas grande de parametros
+   * dentro de un endpoint. Los 'query pameters' se inician con un signo de pregunta y se van concatenando con un ampersand '&'
+   * Ejemplo para manipular queries en nest js
+   */
+
+  @Get('productos')
+  getProductos(@Query() params: any) {
+    /** ESTA ES UNA FORMA DE HACERLO */
+    const { limite, salida } = params;
+    return ` productos: limite ${limite} y salida ${salida}`;
+  }
+
+  @Get('productos-con-query')
+  getProductosConQuery(
+    @Query('limite') limite: number,
+    @Query('salida') salida: number,
+  ) {
+    /** ESTA ES OOOTRA FORMA DE HACERLO */
+    return ` productos: limite ${limite} y salida ${salida}`;
+  }
+
+  /** SINGLE RESPONSABILITY (Principio de una Sola Responsabilidad)
+   * Un método de una clase debe tener una sola y unica responsabilidad y éste patron
+   * favorece la calidad del código y lo hace mas mantenible.
+   * Y para cumplir este principio, tiene que haber un controler por cada clase.
+   * Este archivo es solo de practica pero no cumple con el principio.
+   * Ahora, para crear los controlers desde la terminal, nest tiene un cli que facilita su creacion,
+   * además de otras herramientas para crear clases, decoradores.. etc, etc.
+   * Ej: $ nest g co controllers/nombreclase
+   */
+}
